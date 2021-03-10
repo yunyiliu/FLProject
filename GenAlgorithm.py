@@ -102,6 +102,7 @@ max_gen = 921
 min_x=-55
 max_x=55
 #random.random() 产生0 - 1 之间的随机数
+#产生pop_size这么多数，每个数的大小为min_x+(max_x-min_x)*random.random()
 solution=[min_x+(max_x-min_x)*random.random() for i in range(0,pop_size)]
 gen_no=0
 while(gen_no<max_gen):

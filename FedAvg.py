@@ -49,6 +49,7 @@ def train_and_test(train_loader, test_loader):
     input_num = 784
     hidden_num = 12
     output_num = 10
+    q = 2
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     model = NeuralNet(input_num, hidden_num, output_num)
@@ -64,10 +65,13 @@ def train_and_test(train_loader, test_loader):
             output = model(images)
 
             loss = loss_func(output, labels)
+            fair_loss = (1 / (1 + q)) * pow(loss, (q + 1))
             optimizer.zero_grad()
             loss.backward()  # 误差反向传播，计算参数更新值
             optimizer.step()  # 将参数更新值施加到net的parameters上
-
+            print("loss is:" , loss)
+            print('-----------')
+            print("Fair loss is:", fair_loss)
             # 以下两步可以看每轮损失函数具体的变化情况
             # if (flag + 1) % 10 == 0:
             # print('Epoch [{}/{}], Loss: {:.4f}'.format(epoch + 1, epoches, loss.item()))
@@ -155,9 +159,9 @@ def combine_params(para_A, para_B, para_C):
     fc1_wA = para_A[0][1].data
     fc1_wB = para_B[0][1].data
     fc1_wC = para_C[0][1].data
-    print("fc1_wA", fc1_wA)
-    print("fc2_wB", fc1_wB)
-    print("fc1_wC", fc1_wC)
+    # print("fc1_wA", fc1_wA)
+    # print("fc2_wB", fc1_wB)
+    # print("fc1_wC", fc1_wC)
     fc2_wA = para_A[2][1].data
     fc2_wB = para_B[2][1].data
     fc2_wC = para_C[2][1].data
@@ -173,7 +177,7 @@ for i in range(10):
     print("The {} round to be federated!!!".format(i+1))
     com_para_fc1,com_para_fc2=combine_params(para_A,para_B,para_C)
     para_A=fedrated_test(train_loader_A,test_loader,com_para_fc1,com_para_fc2)
-    print("------------------------------------------------------------------------", para_A)
+    # print("------------------------------------------------------------------------", para_A)
     para_B=fedrated_test(train_loader_B,test_loader,com_para_fc1,com_para_fc2)
     para_C=fedrated_test(train_loader_C,test_loader,com_para_fc1,com_para_fc2)
 
